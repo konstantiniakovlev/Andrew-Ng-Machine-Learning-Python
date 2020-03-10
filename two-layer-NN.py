@@ -10,7 +10,6 @@ cols = data.shape[1]
 X = data[:, :cols-1]
 y = data[:, cols-1:cols]
 
-
 def train_X(X):
     array = np.ones((X.shape[0],1))
     for j in range(X.shape[1]):
@@ -19,7 +18,6 @@ def train_X(X):
             new_column = np.array([1 if label == i else 0 for label in X[:,j]])
             array = np.column_stack((array,new_column))
     return array
-
 
 def train_y(y):
     unique_y = np.unique(y).shape[0]
@@ -87,7 +85,6 @@ def forward(weights, train_X):
     
     return a1, a2, a3, h, z2, z3, z4
 
-
 def cost(weights, train_X, train_y, lamb):
     
     theta1 = np.reshape(weights[:input_size*hidden_size1], (input_size, hidden_size1))
@@ -135,7 +132,6 @@ def cost(weights, train_X, train_y, lamb):
         J += (lamb / (2 * m)) * term3
         
     return float(J)
-
 
 def backward(weights, train_X, train_y, lamb):
     
@@ -188,8 +184,7 @@ def backward(weights, train_X, train_y, lamb):
     
     return grad
 
-
-
+"OPTIMIZATION"
 from scipy import optimize 
 from sklearn import metrics
 
