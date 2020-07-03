@@ -35,7 +35,7 @@ train_y = preprocess_y(y)
 
 
 # the size of input, hidden, and output layers
-input_size = train_X.shape[1] # here one bias node is already added
+input_size = train_X.shape[1]  # here one bias node is already added
 hidden_size1 = 50
 hidden_size2 = 20
 output_size = train_y.shape[1]
@@ -71,15 +71,15 @@ def forward(weights, train_X):
     theta2 = np.matrix(theta2)
     theta3 = np.matrix(theta3)
     
-    a1 = train_X #bias node already added
+    a1 = train_X  # bias node already added
     z2 = a1 * theta1
     
     a2 = act(z2)
-    a2 = np.insert(a2, 0, values = np.ones(train_X.shape[0]), axis = 1 ) #bias node
+    a2 = np.insert(a2, 0, values = np.ones(train_X.shape[0]), axis = 1 )  # bias node
     z3 = a2 * theta2
     
     a3 = act(z3)
-    a3 = np.insert(a3, 0, values = np.ones(train_X.shape[0]), axis = 1 ) #bias node
+    a3 = np.insert(a3, 0, values = np.ones(train_X.shape[0]), axis = 1 )  # bias node
     
     z4 = a3 * theta3
     a4 = act(z4)
