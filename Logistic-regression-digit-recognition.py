@@ -50,13 +50,13 @@ def Gradient(theta, X, y, lamb):
     grad = term1 / m + term2 / (2*m)
     return grad
 
-number_of_labels = len(np.unique(y)) #10
+number_of_labels = len(np.unique(y))  # 10
 parameters = int(X.shape[1])
 all_theta = np.zeros((number_of_labels , parameters))
 
 # one vs all classification
 def oneVSall(X, y, lamb):
-    number_of_labels = len(np.unique(y)) #10
+    number_of_labels = len(np.unique(y))  # 10
     parameters = int(X.shape[1])
     all_theta = np.zeros((number_of_labels , parameters))
     
