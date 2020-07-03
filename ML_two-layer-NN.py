@@ -7,10 +7,12 @@ data = pd.read_csv('ML\\poker-hand-training-true.data', names = names)
 data = np.array(data)
 cols = data.shape[1]
 
+# Splitting data
 X = data[:, :cols-1]
 y = data[:, cols-1:cols]
 
-def train_X(X):
+# Preprocessing data
+def preprocess_X(X):
     array = np.ones((X.shape[0],1))
     for j in range(X.shape[1]):
         unique = np.unique(X[:,j]).shape[0]
@@ -19,7 +21,7 @@ def train_X(X):
             array = np.column_stack((array,new_column))
     return array
 
-def train_y(y):
+def preprocess_y(y):
     unique_y = np.unique(y).shape[0]
     array = np.ones((y.shape[0],1))
     for k in range(unique_y):
@@ -28,12 +30,11 @@ def train_y(y):
     train_y = array[:,1:]
     return train_y
 
-train_X = train_X(X)
-train_y = train_y(y)
+train_X = preprocess_X(X)
+train_y = preprocess_y(y)
 
 
-"""NN MODEL STARTS HERE"""
-
+# the size of input, hidden, and output layers
 input_size = train_X.shape[1] # here one bias node is already added
 hidden_size1 = 50
 hidden_size2 = 20
@@ -45,15 +46,16 @@ weights = (np.random.random(size = input_size * hidden_size1 + ( hidden_size1 + 
 
 lamb = 1
 
-"ACTIVATION FUNCTION"
+# activation function
 def act(z): 
     return 1 / (1 + np.exp(-z))
 
-"GRADIENT OF ACTIVATION FUNCTION"
+# gradient of activation function
 def der_act(z):
     sig = act(z)
     return np.multiply(sig, (1-sig))
 
+# forward propagation
 def forward(weights, train_X):
     
     theta1 = np.reshape(weights[:input_size*hidden_size1], (input_size, hidden_size1))
@@ -85,6 +87,7 @@ def forward(weights, train_X):
     
     return a1, a2, a3, h, z2, z3, z4
 
+# cost function
 def cost(weights, train_X, train_y, lamb):
     
     theta1 = np.reshape(weights[:input_size*hidden_size1], (input_size, hidden_size1))
@@ -96,7 +99,6 @@ def cost(weights, train_X, train_y, lamb):
     input_size * hidden_size1 + ( hidden_size1 + 1 )*hidden_size2 + (hidden_size2 + 1)*output_size],
     (hidden_size2 + 1, output_size))
     
-    
     theta1 = np.matrix(theta1)
     theta2 = np.matrix(theta2)
     theta3 = np.matrix(theta3)
@@ -106,12 +108,12 @@ def cost(weights, train_X, train_y, lamb):
     m = train_X.shape[0]
     J = 0
     
-    """loss term"""
+    # loss term
     for i in range(K):
         term = - train_y[:,i].T * np.log(h[:,i]) - (1 - train_y[:,i]).T * np.log(1-h[:,i])
         J += term / m
     
-    """regularization terms"""
+    # regularization terms
     theta1 = theta1[1:,:]
     theta2 = theta2[1:,:]
     theta3 = theta3[1:,:]
@@ -133,6 +135,7 @@ def cost(weights, train_X, train_y, lamb):
         
     return float(J)
 
+# backward propagation
 def backward(weights, train_X, train_y, lamb):
     
     theta1 = np.reshape(weights[:input_size*hidden_size1], (input_size, hidden_size1))
@@ -184,15 +187,15 @@ def backward(weights, train_X, train_y, lamb):
     
     return grad
 
-"OPTIMIZATION"
+# optimization
 from scipy import optimize 
 from sklearn import metrics
 
-e = 20 #NUMBER OF EPOCH SETS
+e = 20  # number of epoch sets
 
-"MODEL TRAINING"
+# training the model
 cost1 = cost(weights, train_X, train_y, lamb)
-print('1)',cost1)
+print('1)', cost1)
 fmin = optimize.minimize(fun = cost, x0 = weights, args = (train_X, train_y, lamb), method = 'TNC', jac = backward, options = {'maxiter': 50})
 
 new_weights = fmin.x
@@ -205,7 +208,7 @@ for i in range(3, e + 1):
     cost3 = cost(new_weights, train_X, train_y, lamb)
     print(i,')',cost3)
 
-"PREDICTION ACCURACY"
+# prediction accuracy 
 a1, a2, a3, h, z2, z3, z4 = forward(new_weights, train_X)
 new_y = h
 
@@ -213,13 +216,3 @@ pred = np.argmax(new_y, axis= 1)
 accuracy = metrics.accuracy_score(y,pred)
     
 print(accuracy * 100, '%')
-
-
-
-
-
-
-
-
-
-
