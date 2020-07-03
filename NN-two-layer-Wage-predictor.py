@@ -6,16 +6,16 @@ from sklearn import metrics
 data = pd.read_csv('ML\\adult.data')
 data = pd.DataFrame(data)
 
-X= data.iloc[:,:-1] #(32560,14)
-y = data.iloc[:,-1] #(32560,)
+# data splitting
+X= data.iloc[:,:-1]  # (32560,14)
+y = data.iloc[:,-1]  # (32560,)
 
-"removing a column"
+# removing a column
 X = np.array(X)
 X = np.delete(X, 2, axis = 1)
-X = pd.DataFrame(X) #(32560,13)
+X = pd.DataFrame(X)  # (32560,13)
 
-
-"ONE HOT ENCODING"
+# one hot encoding
 def one_hot(data):
     
     data = np.array(data)
@@ -62,49 +62,47 @@ def one_hot(data):
         
     return new_data
 
-X = one_hot(X) #32560,496
-y = one_hot(y) #32560,2
+# one hot encoding X, y sets
+X = one_hot(X)  # 32560,496
+y = one_hot(y)  # 32560, 2
 
-"Adding Bias"
-X = np.insert(X, 0, values = np.ones(X.shape[0]), axis = 1) #32560,497
+# adding bias 
+X = np.insert(X, 0, values = np.ones(X.shape[0]), axis = 1)  # 32560,497
 
-#-----------------------------------------------------------------------------
-"Training Model: Two-layer-NN"
-
-input_size = X.shape[1] #bias already added
+# determine layer sizes 
+input_size = X.shape[1]  # bias already added
 hidden_size1 = 20
 hidden_size2 = 10
 output_size = y.shape[1]
 
+# generate random weight values 
 weights = np.array(np.random.random(size = input_size*hidden_size1 + (hidden_size1+1)*hidden_size2 + 
                            (hidden_size2 +1)*output_size ) * 0.25) - 0.5
                             
-
-
-"Activation Function: Sigmoid"
+# Sigmoid activation function
 def g(z):
     sig = 1 / (1 + np.exp(-z))
     return sig
 
-"Gradient of the Activation Function"
+# gradient activation function
 def grad_g(z):
     grad = np.multiply(g(z), (1 - g(z)))
     return grad
 
-"Forward Propagation"
+# forward propagation
 def forward(weights, train_X):
     
-    theta1 = weights[:input_size*hidden_size1].reshape(input_size, hidden_size1) #497,20
+    theta1 = weights[:input_size*hidden_size1].reshape(input_size, hidden_size1)  # 497,20
     theta2 = weights[input_size*hidden_size1 : 
-        input_size*hidden_size1 + (hidden_size1+1)*hidden_size2].reshape(hidden_size1 +1, hidden_size2) #21,10
-    theta3 = weights[input_size*hidden_size1 + (hidden_size1+1)*hidden_size2:].reshape(hidden_size2+1,output_size) #11,2
+        input_size*hidden_size1 + (hidden_size1+1)*hidden_size2].reshape(hidden_size1 +1, hidden_size2)  # 21,10
+    theta3 = weights[input_size*hidden_size1 + (hidden_size1+1)*hidden_size2:].reshape(hidden_size2+1,output_size)  # 11,2
     
     X = np.matrix(train_X)
     theta1 = np.matrix(theta1)
     theta2 = np.matrix(theta2)
     theta3 = np.matrix(theta3)
     
-    a1 = X #bias already added 
+    a1 = X  # bias already added 
     
     z2 = a1 * theta1
     a2 = g(z2)
@@ -120,22 +118,22 @@ def forward(weights, train_X):
 
     return a1, z2, a2, z3, a3, z4, h
 
-"Cost Function"    
+# cost function     
 def cost(weights, train_X, y, lamb):
     
-    theta1 = weights[:input_size*hidden_size1].reshape(input_size, hidden_size1) #497,20
+    theta1 = weights[:input_size*hidden_size1].reshape(input_size, hidden_size1)  # 497,20
     theta2 = weights[input_size*hidden_size1 : 
-        input_size*hidden_size1 + (hidden_size1+1)*hidden_size2].reshape(hidden_size1 +1, hidden_size2) #21,10
-    theta3 = weights[input_size*hidden_size1 + (hidden_size1+1)*hidden_size2:].reshape(hidden_size2+1,output_size) #11,2
+        input_size*hidden_size1 + (hidden_size1+1)*hidden_size2].reshape(hidden_size1 +1, hidden_size2)  # 21,10
+    theta3 = weights[input_size*hidden_size1 + (hidden_size1+1)*hidden_size2:].reshape(hidden_size2+1,output_size)  # 11,2
     
 
     a1, z2, a2, z3, a3, z4, h = forward(weights, train_X)
     
-    y = np.matrix(y) #32560,2
+    y = np.matrix(y)  # 32560,2
     X = np.matrix(train_X) 
-    theta1 = np.matrix(theta1) #497,20
-    theta2 = np.matrix(theta2) #21,10
-    theta3 = np.matrix(theta3) #11,2
+    theta1 = np.matrix(theta1)  # 497,20
+    theta2 = np.matrix(theta2)  # 21,10
+    theta3 = np.matrix(theta3)  # 11,2
     
     m = X.shape[0]
     
@@ -152,27 +150,25 @@ def cost(weights, train_X, y, lamb):
 
     return J
 
-"Back Propagation"
+# back forward 
 def back(weights, train_X, y, lamb):
     
-    theta1 = weights[:input_size*hidden_size1].reshape(input_size, hidden_size1) #497,20
+    theta1 = weights[:input_size*hidden_size1].reshape(input_size, hidden_size1)  # 497,20
     theta2 = weights[input_size*hidden_size1 : 
-        input_size*hidden_size1 + (hidden_size1+1)*hidden_size2].reshape(hidden_size1 +1, hidden_size2) #21,10
-    theta3 = weights[input_size*hidden_size1 + (hidden_size1+1)*hidden_size2:].reshape(hidden_size2+1,output_size) #11,2
-
-    
+        input_size*hidden_size1 + (hidden_size1+1)*hidden_size2].reshape(hidden_size1 +1, hidden_size2)  # 21,10
+    theta3 = weights[input_size*hidden_size1 + (hidden_size1+1)*hidden_size2:].reshape(hidden_size2+1,output_size)  # 11,2
     
     a1, z2, a2, z3, a3, z4, h = forward(weights, train_X)
     
-    y = np.matrix(y) #32560,2
+    y = np.matrix(y)  # 32560,2
     X = np.matrix(train_X) 
-    theta1 = np.matrix(theta1) #497,20
-    theta2 = np.matrix(theta2) #21,10
-    theta3 = np.matrix(theta3) #11,2
+    theta1 = np.matrix(theta1)  # 497,20
+    theta2 = np.matrix(theta2)  # 21,10
+    theta3 = np.matrix(theta3)  # 11,2
     
     m = X.shape[0]
     
-    d4 = h - y #32560,2
+    d4 = h - y  # 32560,2
     
     d3 = d4 * theta3.T
     d3 = np.multiply(d3[:,1:], grad_g(z3))
@@ -204,14 +200,13 @@ def back(weights, train_X, y, lamb):
 
     return grad
 
-#------------------------------------------------------------------------------
-"Training the NN model & Predictions"
-
+# training nn model and predicting
 def train(weights, X, y, epochs, lamb):
     
-    """weights = the original randomly generated weights
-        epochs = chosen number times 10
-        cost function is displayed after a set of 10 epochs 
+    """
+    weights: the original randomly generated weights
+    epochs: chosen number times 10
+    cost function is displayed after a set of 10 epochs 
     """
     
     for i in range(epochs):
@@ -223,7 +218,7 @@ def train(weights, X, y, epochs, lamb):
 
     return weights
 
-"Prediction calculator"
+# predictions
 def prediction(weights, X):
     a1, z2, a2, z3, a3, z4, h = forward(weights, X)
     
@@ -240,30 +235,16 @@ def prediction(weights, X):
             predicted_y[i,1] = 1
             predicted_y[i,0] = 0
     
-    
     return predicted_y
-
-#------------------------------------------------------------------------------
 
 new_weights = train(weights, X, y, 11, 1)
 
+# get the predictions
 predicted_y = prediction(new_weights, X)
 
+# prediction accuracy
 accuracy = metrics.accuracy_score(y,predicted_y)
 print(accuracy*100)
 
 pred = prediction(new_weights, X[3000, :])
-
 print(pred)
-
-
-
-
-
-
-
-
-
-
-
-
