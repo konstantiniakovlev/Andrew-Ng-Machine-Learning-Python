@@ -40,7 +40,7 @@ hidden_size1 = 50
 hidden_size2 = 20
 output_size = train_y.shape[1]
 
-
+# generate initial weights
 weights = (np.random.random(size = input_size * hidden_size1 + ( hidden_size1 + 1 )*hidden_size2 
                            + (hidden_size2 + 1)*output_size ) - 0.5) * 0.25 
 
